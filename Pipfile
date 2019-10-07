@@ -7,6 +7,8 @@ verify_ssl = true
 
 [packages]
 flask-restful = "*"
+flask-sqlalchemy = "*"
+flask-jwt-extended = "*"
 
 [requires]
 python_version = "3.6"
