@@ -1,3 +1,4 @@
+from flask import jsonify
 from flask_restful import Resource, reqparse
 from flask_jwt_extended import (
     create_access_token,
@@ -70,13 +71,13 @@ class UserLogin(Resource):
 
         user = UserModel.find_by_username(username)
         if user and safe_str_cmp(password, user.password):
-            access_token = create_access_token(identity=user.id, fresh=True)
-            refresh_token = create_refresh_token(user.id)
-            return {
-                'access_token': access_token,
-                'refresh_token': refresh_token
-            }
-
+            access_token = create_access_token(identity=user, fresh=True)
+            refresh_token = create_refresh_token(user)
+            return jsonify(
+                access_token=access_token,
+                refresh_token=refresh_token,
+                logged_in_as=username
+            )
         return {'message': 'Invalid credentials'}, 401
 
 

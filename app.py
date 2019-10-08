@@ -26,16 +26,25 @@ jwt = JWTManager(app)
 
 
 @jwt.user_claims_loader
-def add_claims_to_jwt(identity):
+def add_claims_to_jwt(user):
     """
     Claims are just piecies of data that we can choose to attach to the JWT poayload
     Used to add some extra data
     :param identity:
     :return json message telling us whether the current logged in user is the Admin:
     """
-    if identity == 1:   # instead of hard coding, you should get the data from a config file or database
+    if user.id == 1:   # instead of hard coding, you should get the data from a config file or database
         return {'is_admin': True}
     return {'is_admin': False}
+
+
+# Create a function that will be called whenever create_access_token
+# is used. It will take whatever object is passed into the
+# create_access_token method, and lets us define what the identity
+# of the access token should be.
+@jwt.user_identity_loader
+def user_identity_lookup(user):
+    return user.username
 
 
 @jwt.token_in_blacklist_loader
