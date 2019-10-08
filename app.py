@@ -24,9 +24,16 @@ jwt = JWTManager(app)
 
 @jwt.user_claims_loader
 def add_claims_to_jwt(identity):
-    if identity == 1:   # instead of hard coding, you should frim a config file or database
+    """
+    Claims are just piecies of data that we can choose to attach to the JWT poayload
+    Used to add some extra data
+    :param identity:
+    :return json message telling us whether the current logged in user is the Admin:
+    """
+    if identity == 1:   # instead of hard coding, you should get the data from a config file or database
         return {'is_admin': True}
     return {'is_admin': False}
+
 
 api.add_resource(Store, '/store/<string:name>')
 api.add_resource(StoreList, '/stores')
@@ -36,6 +43,7 @@ api.add_resource(UserRegister, '/register')
 api.add_resource(User, '/user/<string:name>')
 api.add_resource(UsersList, '/users')
 api.add_resource(UserLogin, '/login')
+api.add_resource(TokenRefresh, '/refresh')
 
 if __name__ == '__main__':
     from db import db
