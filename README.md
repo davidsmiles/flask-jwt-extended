@@ -1,6 +1,6 @@
 # A RESTful API
 
-Implemented using Flask-RESTFul, Flask-JWT_Extended and Flask-SQLAlchemy.
+Implemented using Flask-RESTFul, Flask-JWT-Extended and Flask-SQLAlchemy.
 
 
 #### _Milestone_
