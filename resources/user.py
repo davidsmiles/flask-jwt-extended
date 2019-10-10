@@ -6,7 +6,8 @@ from flask_jwt_extended import (
     jwt_refresh_token_required,
     get_jwt_identity,
     jwt_required,
-    get_raw_jwt
+    get_raw_jwt,
+    current_user
 )
 
 from blacklist import BLACKLIST
@@ -60,6 +61,11 @@ class UsersList(Resource):
     def get(self):
         users = UserModel.find_all()
         return {'users': [user.json() for user in users]}
+
+class CurrentUser(Resource):
+    @jwt_required
+    def get(self):
+        return current_user.json()
 
 
 class UserLogin(Resource):
