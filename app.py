@@ -4,6 +4,7 @@ from flask import Flask
 from flask_jwt_extended import JWTManager
 from flask_restful import Api
 
+from resources.index import Index
 from resources.item import *
 from resources.store import *
 from resources.user import *
@@ -65,6 +66,7 @@ def invalid_token_callback():
     }, 401
 
 
+
 @jwt.unauthorized_loader
 def unauthorized_callback(error):
     return {
@@ -89,6 +91,7 @@ def revoked_token():
    }, 401
 
 
+api.add_resource(Index, '/')
 api.add_resource(Store, '/store/<string:name>')
 api.add_resource(StoreList, '/stores')
 api.add_resource(Item, '/item/<string:name>')
