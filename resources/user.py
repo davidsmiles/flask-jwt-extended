@@ -1,3 +1,5 @@
+from functools import wraps
+
 from flask import jsonify
 from flask_restful import Resource, reqparse
 from flask_jwt_extended import (
@@ -7,7 +9,8 @@ from flask_jwt_extended import (
     get_jwt_identity,
     jwt_required,
     get_raw_jwt,
-    current_user
+    current_user,
+    verify_jwt_in_request
 )
 
 from blacklist import BLACKLIST
@@ -57,7 +60,18 @@ class User(Resource):
         return user.delete()
 
 
+def admin_required(fn):
+    @wraps(fn)
+    def secure_func(*args, **kwargs):
+        verify_jwt_in_request()
+        if current_user.id == 1:
+            return fn(*args, **kwargs)
+        return {'message': 'only admin can access this resource'}
+    return secure_func
+
+
 class UsersList(Resource):
+    @admin_required
     def get(self):
         users = UserModel.find_all()
         return {'users': [user.json() for user in users]}
