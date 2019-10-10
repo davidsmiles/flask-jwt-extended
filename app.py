@@ -1,14 +1,16 @@
-from flask import Flask
-from flask_restful import Api
-from flask_jwt_extended import JWTManager
+import os
 
-from blacklist import BLACKLIST
-from resources.user import *
+from flask import Flask
+from flask_jwt_extended import JWTManager
+from flask_restful import Api
+
 from resources.item import *
 from resources.store import *
+from resources.user import *
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///data.db'
+db_uri = os.environ.get('DATABASE_URL', 'sqlite:///data.db')
+app.config['SQLALCHEMY_DATABASE_URI'] = db_uri
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['PROPAGATE_EXCEPTIONS'] = True
 app.config['JWT_BLACKLIST_ENABLED'] = True
@@ -17,18 +19,13 @@ app.secret_key = 'jose'
 api = Api(app)
 
 
-@app.before_first_request
-def create_tables():
-    db.create_all()
-
-
 jwt = JWTManager(app)
 
 
 @jwt.user_claims_loader
 def add_claims_to_jwt(user):
     """
-    Claims are just piecies of data that we can choose to attach to the JWT poayload
+    Claims are just piecies of data that we can choose to attach to the JWT payload
     Used to add some extra data
     :param identity:
     :return json message telling us whether the current logged in user is the Admin:
