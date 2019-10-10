@@ -16,10 +16,10 @@ class Item(Resource):
                         required=True,
                         help="This field cannot be left blank!"
                         )
-    parser.add_argument('store_id',
-                        type=int,
+    parser.add_argument('store_name',
+                        type=str,
                         required=True,
-                        help="Every item needs a store_id."
+                        help="Every item needs a store_name"
                         )
 
     def get(self, name):
