@@ -1,7 +1,7 @@
 import os
 
 from flask import Flask
-from flask_jwt_extended import JWTManager
+from flask_jwt_extended import *
 from flask_restful import Api
 
 from resources.index import Index
@@ -16,33 +16,22 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['PROPAGATE_EXCEPTIONS'] = True
 app.config['JWT_BLACKLIST_ENABLED'] = True
 app.config['JWT_BLACKLIST_TOKEN_CHECKS'] = ['access', 'refresh']
-app.secret_key = 'jose'
+app.config['JWT_SECRET_KEY'] = 'secret-key'     # change this in production
 api = Api(app)
 
 
 jwt = JWTManager(app)
 
 
-@jwt.user_claims_loader
-def add_claims_to_jwt(user):
-    """
-    Claims are just piecies of data that we can choose to attach to the JWT payload
-    Used to add some extra data
-    :param identity:
-    :return json message telling us whether the current logged in user is the Admin:
-    """
-    if user.id == 1:   # instead of hard coding, you should get the data from a config file or database
-        return {'is_admin': True}
-    return {'is_admin': False}
+@jwt.user_loader_callback_loader
+def user_loader_callback(identity):
+    user = UserModel.find_by_username(identity)
+    return user if user else None
 
 
-# Create a function that will be called whenever create_access_token
-# is used. It will take whatever object is passed into the
-# create_access_token method, and lets us define what the identity
-# of the access token should be.
-@jwt.user_identity_loader
-def user_identity_lookup(user):
-    return user.username
+@jwt.user_loader_error_loader
+def user_error_callback(identity):
+    return {'message': "user with {} not found..".format(identity)}
 
 
 @jwt.token_in_blacklist_loader
@@ -59,12 +48,11 @@ def expired_token_callback():
 
 
 @jwt.invalid_token_loader
-def invalid_token_callback():
+def invalid_token_callback(error):
     return {
         'description': 'Signature verification failed',
         'error': 'invalid_token'
     }, 401
-
 
 
 @jwt.unauthorized_loader

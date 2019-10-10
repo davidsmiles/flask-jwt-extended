@@ -4,7 +4,8 @@ from flask_jwt_extended import (
     get_jwt_claims,
     jwt_optional,
     get_jwt_identity,
-    fresh_jwt_required
+    fresh_jwt_required,
+    current_user
 )
 from models.item import ItemModel
 
@@ -46,8 +47,7 @@ class Item(Resource):
 
     @jwt_required
     def delete(self, name):
-        claims = get_jwt_claims()
-        if not claims['is_admin']:
+        if not current_user.id == 1:
             return {'message': 'you need admin priviledges'}, 401
 
         item = ItemModel.find_by_name(name)

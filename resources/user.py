@@ -71,8 +71,8 @@ class UserLogin(Resource):
 
         user = UserModel.find_by_username(username)
         if user and safe_str_cmp(password, user.password):
-            access_token = create_access_token(identity=user, fresh=True)
-            refresh_token = create_refresh_token(user)
+            access_token = create_access_token(identity=username, fresh=True)
+            refresh_token = create_refresh_token(identity=username)
             return jsonify(
                 access_token=access_token,
                 refresh_token=refresh_token,
